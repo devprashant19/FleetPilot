@@ -240,7 +240,7 @@ router.post('/:id/complete', async (req, res) => {
     return;
   }
 
-  const { actualDistance, fuelConsumed, finalOdometer } = parse.data;
+  const { actualDistance, fuelConsumed, finalOdometer, podPhotoBase64, podSignatureBase64 } = parse.data;
 
   const trip = await prisma.trip.findUnique({
     where: { id: req.params.id },
@@ -272,6 +272,8 @@ router.post('/:id/complete', async (req, res) => {
         completedAt: new Date(),
         actualDistance,
         fuelConsumed,
+        podPhotoBase64,
+        podSignatureBase64,
       },
       include: { vehicle: true, driver: true },
     }),

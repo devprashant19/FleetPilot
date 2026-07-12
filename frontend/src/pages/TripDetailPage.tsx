@@ -255,6 +255,31 @@ export function TripDetailPage() {
           </CardContent>
         </Card>
 
+        {/* Proof of Delivery (if available) */}
+        {(trip.podPhotoBase64 || trip.podSignatureBase64) && (
+          <Card className="lg:col-span-2">
+            <CardHeader><CardTitle className="text-base">Proof of Delivery</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {trip.podPhotoBase64 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-muted-foreground">Cargo Photo</h4>
+                  <div className="rounded-lg overflow-hidden border border-border">
+                    <img src={trip.podPhotoBase64} alt="Cargo Proof" className="w-full h-auto object-cover max-h-64" />
+                  </div>
+                </div>
+              )}
+              {trip.podSignatureBase64 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-muted-foreground">Receiver Signature</h4>
+                  <div className="rounded-lg overflow-hidden border border-border bg-white p-2">
+                    <img src={trip.podSignatureBase64} alt="Receiver Signature" className="w-full h-auto max-h-64 object-contain" />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Timeline */}
         <Card className="lg:col-span-2">
           <CardHeader><CardTitle className="text-base">Timeline</CardTitle></CardHeader>
