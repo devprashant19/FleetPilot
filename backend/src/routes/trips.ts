@@ -10,7 +10,7 @@ router.use(requireAuth);
 
 // ─── Business Rule Validators ─────────────────────────────────────────────────
 
-async function validateVehicleForTrip(vehicleId: string, excludeTripId?: string) {
+export async function validateVehicleForTrip(vehicleId: string, excludeTripId?: string) {
   const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
   if (!vehicle) return { error: 'Vehicle not found' };
 
@@ -40,7 +40,7 @@ async function validateVehicleForTrip(vehicleId: string, excludeTripId?: string)
   return { vehicle };
 }
 
-async function validateDriverForTrip(driverId: string) {
+export async function validateDriverForTrip(driverId: string) {
   const driver = await prisma.driver.findUnique({ where: { id: driverId } });
   if (!driver) return { error: 'Driver not found' };
 
