@@ -1,9 +1,11 @@
 <div align="center">
+  <img src="https://via.placeholder.com/150x150.png?text=FleetPilot+Logo" alt="FleetPilot Logo" width="150" height="150" />
   <h1 align="center">🚛 FleetPilot</h1>
   <p align="center">
-    <strong>A full-stack fleet management platform built for real-time vehicle tracking, trip dispatch workflows, driver management, and operational analytics.</strong>
+    <strong>A professional, full-stack fleet management platform built for real-time vehicle tracking, trip dispatch workflows, driver management, and operational analytics.</strong>
   </p>
   <p align="center">
+    <a href="#features">Features</a> • 
     <a href="#tech-stack">Tech Stack</a> • 
     <a href="#quick-start-docker">Quick Start</a> • 
     <a href="#demo-login-credentials">Demo</a> • 
@@ -18,9 +20,23 @@
   </p>
 </div>
 
+<p align="center">
+  <img src="https://via.placeholder.com/800x400.png?text=FleetPilot+Dashboard+Preview" alt="FleetPilot Dashboard Preview" style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+</p>
+
+---
+
 ## 📖 Overview
 
-FleetPilot provides complete control over your fleet's operations, seamlessly integrating drivers, vehicles, maintenance logs, and financial analytics into one intuitive dashboard. 
+FleetPilot provides complete control over your fleet's operations, seamlessly integrating drivers, vehicles, maintenance logs, and financial analytics into one intuitive dashboard. Designed for scalability and ease of use, it simplifies complex logistics into actionable insights.
+
+## ✨ Key Features
+
+- 📍 **Real-Time Tracking & Dispatch**: Instantly assign drivers and vehicles to trips, and monitor their status live.
+- 📊 **Advanced Analytics & Reporting**: Generate insightful reports on fuel efficiency, operational costs, and fleet utilization.
+- 👥 **Role-Based Access Control (RBAC)**: Dedicated interfaces for Fleet Managers, Drivers, Safety Officers, and Financial Analysts.
+- 🛠️ **Maintenance & Expense Management**: Track vehicle health, log repairs, and manage operational expenses effortlessly.
+- 🚀 **Modern Tech Stack**: Built with React, TypeScript, Node.js, and PostgreSQL for robust performance.
 
 ---
 
@@ -221,3 +237,10 @@ npm run dev
 | **Analytics** | | |
 | `/api/dashboard` | `GET` | Retrieve live Key Performance Indicators |
 | `/api/reports` | `GET` | Retrieve aggregated analytics reports |
+
+---
+
+<div align="center">
+  <p>Made with ❤️ by the FleetPilot Team</p>
+</div>
+
