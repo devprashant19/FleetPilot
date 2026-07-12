@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { vehiclesApi } from '@/lib/api';
 import { Plus, Search, Edit2, Trash2, Loader2, AlertCircle, Truck } from 'lucide-react';
@@ -48,6 +49,7 @@ const emptyForm: VehicleForm = {
 };
 
 export function VehiclesPage() {
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState('');
@@ -234,7 +236,21 @@ export function VehiclesPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button size="icon" variant="ghost" onClick={() => openEdit(v)}>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          title="View Details"
+                          onClick={() => navigate(`/vehicles/${v.id}`)}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </Button>
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          onClick={() => openEdit(v)}
+                          disabled={v.status === 'ON_TRIP'}
+                          title={v.status === 'ON_TRIP' ? "Cannot edit while on trip" : "Edit"}
+                        >
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
@@ -242,6 +258,8 @@ export function VehiclesPage() {
                           variant="ghost"
                           className="hover:text-red-400"
                           onClick={() => setDeleteConfirm(v.id)}
+                          disabled={v.status === 'ON_TRIP'}
+                          title={v.status === 'ON_TRIP' ? "Cannot delete while on trip" : "Delete"}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

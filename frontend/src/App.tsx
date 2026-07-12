@@ -5,6 +5,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { VehiclesPage } from '@/pages/VehiclesPage';
+import { VehicleDetailPage } from '@/pages/VehicleDetailPage';
 import { DriversPage } from '@/pages/DriversPage';
 import { TripsPage } from '@/pages/TripsPage';
 import { TripDetailPage } from '@/pages/TripDetailPage';
@@ -32,6 +33,7 @@ export default function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/vehicles" element={<VehiclesPage />} />
+            <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
             <Route path="/drivers" element={<DriversPage />} />
             <Route path="/trips" element={<TripsPage />} />
             <Route path="/trips/:id" element={<TripDetailPage />} />
