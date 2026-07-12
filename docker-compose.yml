@@ -1,0 +1,51 @@
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: fleetpilot-db
+    environment:
+      POSTGRES_DB: fleetpilot
+      POSTGRES_USER: fleetpilot
+      POSTGRES_PASSWORD: fleetpilot123
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U fleetpilot -d fleetpilot']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fleetpilot-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://fleetpilot:fleetpilot123@postgres:5432/fleetpilot
+      JWT_SECRET: fleetpilot-super-secret-jwt-key-change-in-production
+      PORT: 3001
+      NODE_ENV: production
+    ports:
+      - '3001:3001'
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3001
+    container_name: fleetpilot-frontend
+    depends_on:
+      - backend
+    ports:
+      - '5173:80'
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
