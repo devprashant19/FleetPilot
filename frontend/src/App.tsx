@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { AppShell } from '@/components/layout/AppShell';
@@ -18,6 +19,7 @@ import { ReportsPage } from '@/pages/ReportsPage';
 import { ActiveTripPage } from '@/pages/driver/ActiveTripPage';
 import { LogFuelPage } from '@/pages/driver/LogFuelPage';
 import { LogMaintenancePage } from '@/pages/driver/LogMaintenancePage';
+import { Sun, Moon } from 'lucide-react';
 
 function AppContent() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -73,10 +75,38 @@ function AppContent() {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'dark';
+  });
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <div className="relative min-h-screen">
+          <AppContent />
+          
+          {/* Floating Theme Toggle in Bottom-Left Corner */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="fixed bottom-6 left-6 z-[9999] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-lg hover:text-foreground hover:scale-105 hover:bg-accent transition-all duration-200"
+          >
+            {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5 text-amber-400" />}
+          </button>
+        </div>
       </AuthProvider>
     </BrowserRouter>
   );
