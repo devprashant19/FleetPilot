@@ -28,7 +28,8 @@ export function FuelAndExpensesPage() {
   const { data: expenseRes, isLoading: expenseLoading } = useQuery({ queryKey: ['expenses'], queryFn: () => expensesApi.list({ limit: 100 }) });
   const { data: maintRes, isLoading: maintLoading } = useQuery({ queryKey: ['maintenance'], queryFn: () => maintenanceApi.list({ limit: 100 }) });
   
-  const { data: vehicles = [] } = useQuery({ queryKey: ['vehicles'], queryFn: vehiclesApi.list });
+  const { data: vehiclesResp } = useQuery({ queryKey: ['vehicles', 'all'], queryFn: () => vehiclesApi.list({ limit: 1000 }) });
+  const vehicles: any[] = vehiclesResp?.data || [];
 
   const fuelLogs = fuelRes?.data || [];
   const expenses = expenseRes?.data || [];

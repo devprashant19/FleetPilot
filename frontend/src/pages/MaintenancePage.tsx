@@ -25,10 +25,11 @@ export function MaintenancePage() {
   });
   const logs = logsResponse?.data || [];
 
-  const { data: vehicles = [] } = useQuery({
-    queryKey: ['vehicles'],
-    queryFn: vehiclesApi.list,
+  const { data: vehiclesResp } = useQuery({
+    queryKey: ['vehicles', 'all'],
+    queryFn: () => vehiclesApi.list({ limit: 1000 }),
   });
+  const vehicles: any[] = vehiclesResp?.data || [];
 
   const createMutation = useMutation({
     mutationFn: maintenanceApi.create,

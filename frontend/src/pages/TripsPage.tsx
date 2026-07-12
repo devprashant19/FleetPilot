@@ -79,8 +79,10 @@ export function TripsPage() {
   const trips = tripsResponse?.data || [];
   const total = tripsResponse?.total || 0;
   const totalPages = tripsResponse?.totalPages || 1;
-  const { data: vehicles = [] } = useQuery({ queryKey: ['vehicles'], queryFn: vehiclesApi.list });
-  const { data: drivers = [] } = useQuery({ queryKey: ['drivers'], queryFn: driversApi.list });
+  const { data: vehiclesResp } = useQuery({ queryKey: ['vehicles', 'all'], queryFn: () => vehiclesApi.list({ limit: 1000 }) });
+  const vehicles: any[] = vehiclesResp?.data || [];
+  const { data: driversResp } = useQuery({ queryKey: ['drivers', 'all'], queryFn: () => driversApi.list({ limit: 1000 }) });
+  const drivers: any[] = driversResp?.data || [];
 
   // Only available vehicles and valid drivers for trip creation
   const availableVehicles = vehicles.filter((v: any) => v.status === 'AVAILABLE');
