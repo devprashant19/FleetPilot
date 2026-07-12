@@ -6,6 +6,7 @@ import { Menu, Truck, Search as SearchIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GlobalSearch } from './GlobalSearch';
 import { useAuth } from '@/contexts/AuthContext';
+import { NotificationBell } from './NotificationBell';
 
 export function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -13,26 +14,29 @@ export function AppShell() {
   const { user } = useAuth();
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex w-full min-h-screen bg-background overflow-x-hidden">
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
       <GlobalSearch open={searchOpen} setOpen={setSearchOpen} />
       
-      <main className="flex-1 w-full md:ml-64 min-h-screen flex flex-col">
+      <main className="flex-1 flex flex-col md:pl-64 min-w-0">
         {/* Mobile Header */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card">
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card sticky top-0 z-30">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Truck className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="font-bold tracking-tight">FleetPilot</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)}>
-              <SearchIcon className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
+            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="shrink-0">
               <Menu className="h-6 w-6" />
             </Button>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+                <Truck className="h-3 w-3 text-primary-foreground" />
+              </div>
+              <span className="font-bold tracking-tight truncate max-w-[120px]">FleetPilot</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)}>
+              <SearchIcon className="h-5 w-5 text-muted-foreground" />
+            </Button>
+            <NotificationBell />
           </div>
         </div>
 
@@ -50,7 +54,8 @@ export function AppShell() {
             </kbd>
           </Button>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-muted-foreground">Welcome back, <span className="font-semibold text-foreground">{user?.name}</span></span>
+            <NotificationBell />
+            <span className="text-muted-foreground ml-2">Welcome back, <span className="font-semibold text-foreground">{user?.name}</span></span>
           </div>
         </div>
         <div className="p-4 md:p-6 w-full max-w-[1400px] mx-auto flex-1 overflow-x-hidden">

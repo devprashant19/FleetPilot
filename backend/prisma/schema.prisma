@@ -49,6 +49,22 @@ enum ExpenseType {
   MAINTENANCE
 }
 
+enum NotificationType {
+  INFO
+  WARNING
+  CRITICAL
+  SUCCESS
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -56,6 +72,8 @@ model User {
   passwordHash String
   role         Role
   createdAt    DateTime @default(now())
+  
+  driver       Driver?
 }
 
 model Vehicle {
@@ -86,6 +104,9 @@ model Driver {
   safetyScore       Float        @default(100)
   status            DriverStatus @default(AVAILABLE)
   createdAt         DateTime     @default(now())
+  
+  userId            String?      @unique
+  user              User?        @relation(fields: [userId], references: [id])
 
   trips Trip[]
 }

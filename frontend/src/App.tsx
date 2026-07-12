@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
+import { DriverShell } from '@/components/layout/DriverShell';
 import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
@@ -16,11 +17,71 @@ import { MaintenancePage } from '@/pages/MaintenancePage';
 import { FuelPage } from '@/pages/FuelPage';
 import { ExpensesPage } from '@/pages/ExpensesPage';
 import { ReportsPage } from '@/pages/ReportsPage';
+import { ActiveTripPage } from '@/pages/driver/ActiveTripPage';
+import { LogFuelPage } from '@/pages/driver/LogFuelPage';
+import { LogMaintenancePage } from '@/pages/driver/LogMaintenancePage';
 import { Sun, Moon } from 'lucide-react';
 
-export default function App() {
+function AppContent() {
+  const { isAuthenticated, isLoading, user } = useAuth();
+  
   useRealtimeUpdates();
 
+  if (isLoading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
+  
+  if (user?.role === 'DRIVER') {
+    return (
+      <Routes>
+        <Route path="/" element={<DriverShell />}>
+          <Route index element={<Navigate to="/driver/trip" replace />} />
+          <Route path="driver/trip" element={<ActiveTripPage />} />
+          <Route path="driver/fuel" element={<LogFuelPage />} />
+          <Route path="driver/maintenance" element={<LogMaintenancePage />} />
+          <Route path="*" element={<Navigate to="/driver/trip" replace />} />
+        </Route>
+      </Routes>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppShell />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="vehicles" element={<VehiclesPage />} />
+        <Route path="vehicles/:id" element={<VehicleDetailPage />} />
+        <Route path="drivers" element={<DriversPage />} />
+        <Route path="drivers/:id" element={<DriverDetailPage />} />
+        <Route path="trips" element={<TripsPage />} />
+        <Route path="trips/:id" element={<TripDetailPage />} />
+        <Route path="maintenance" element={<MaintenancePage />} />
+        <Route path="fuel" element={<FuelPage />} />
+        <Route path="expenses" element={<ExpensesPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
+}
+
+export default function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark';
   });
@@ -42,36 +103,8 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <div className="relative min-h-screen">
-          <Routes>
-            {/* Public */}
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* Protected */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/vehicles" element={<VehiclesPage />} />
-              <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
-              <Route path="/drivers" element={<DriversPage />} />
-              <Route path="/drivers/:id" element={<DriverDetailPage />} />
-              <Route path="/trips" element={<TripsPage />} />
-              <Route path="/trips/:id" element={<TripDetailPage />} />
-              <Route path="/maintenance" element={<MaintenancePage />} />
-              <Route path="/fuel" element={<FuelPage />} />
-              <Route path="/expenses" element={<ExpensesPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-            </Route>
-
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-
+          <AppContent />
+          
           {/* Floating Theme Toggle in Bottom-Left Corner */}
           <button
             onClick={toggleTheme}

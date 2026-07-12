@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth } from '../middleware/auth';
 import { MaintenanceSchema } from '../validators';
+import { broadcast } from '../utils/sse';
+import { createNotification } from '../utils/notifications';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -11,14 +13,29 @@ router.use(requireAuth);
 // GET /api/maintenance
 router.get('/', async (req, res) => {
   const { vehicleId } = req.query;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 50;
+  
+  const where = vehicleId ? { vehicleId: vehicleId as string } : undefined;
+  
+  const total = await prisma.maintenanceLog.count({ where });
   const logs = await prisma.maintenanceLog.findMany({
-    where: vehicleId ? { vehicleId: vehicleId as string } : undefined,
+    where,
     orderBy: { createdAt: 'desc' },
+    skip: (page - 1) * limit,
+    take: limit,
     include: {
       vehicle: { select: { id: true, registrationNumber: true, name: true } },
     },
   });
-  res.json(logs);
+  
+  res.json({
+    data: logs,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  });
 });
 
 // GET /api/maintenance/:id
@@ -69,6 +86,13 @@ router.post('/', async (req, res) => {
     }),
   ]);
 
+  broadcast('invalidate', { keys: ['maintenance', 'vehicles', 'dashboard'] });
+  createNotification(
+    'Maintenance Logged',
+    `New maintenance log created for vehicle ${log.vehicle.registrationNumber}. Vehicle is IN_SHOP.`,
+    'WARNING'
+  );
+
   res.status(201).json(log);
 });
 
@@ -114,6 +138,8 @@ router.post('/:id/close', async (req, res) => {
     }),
   ]);
 
+  broadcast('invalidate', { keys: ['maintenance', 'vehicles', 'dashboard'] });
+
   res.json(updatedLog);
 });
 
@@ -129,6 +155,9 @@ router.put('/:id', async (req, res) => {
     data: { description, cost },
     include: { vehicle: true },
   });
+  
+  broadcast('invalidate', { keys: ['maintenance'] });
+  
   res.json(updated);
 });
 
