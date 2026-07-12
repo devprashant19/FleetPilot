@@ -126,6 +126,8 @@ model Trip {
   createdAt       DateTime   @default(now())
   dispatchedAt    DateTime?
   completedAt     DateTime?
+  podPhotoBase64  String?
+  podSignatureBase64 String?
 
   vehicle Vehicle @relation(fields: [vehicleId], references: [id])
   driver  Driver  @relation(fields: [driverId], references: [id])
