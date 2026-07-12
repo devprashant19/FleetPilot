@@ -55,6 +55,8 @@ export const CompleteTripSchema = z.object({
   actualDistance: z.number().positive('Actual distance must be positive'),
   fuelConsumed: z.number().positive('Fuel consumed must be positive'),
   finalOdometer: z.number().positive('Final odometer must be positive'),
+  podPhotoBase64: z.string().optional(),
+  podSignatureBase64: z.string().optional(),
 });
 
 // ─── Maintenance ────────────────────────────────────────────────

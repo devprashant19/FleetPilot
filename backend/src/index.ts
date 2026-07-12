@@ -14,6 +14,7 @@ import reportsRouter from './routes/reports';
 import eventsRouter from './routes/events';
 import notificationsRouter from './routes/notifications';
 import driverPortalRouter from './routes/driver-portal';
+import { startCronJobs } from './jobs/cron';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,11 +22,13 @@ const PORT = process.env.PORT || 3001;
 // ─── Middleware ───────────────────────────────────────────────
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: function (origin, callback) {
+      callback(null, true);
+    },
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // ─── Routes ───────────────────────────────────────────────────
 app.use('/api/auth', authRouter);
@@ -56,6 +59,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 
 app.listen(PORT, () => {
   console.log(`🚀 FleetPilot API running on port ${PORT}`);
+  startCronJobs();
 });
 
 export default app;

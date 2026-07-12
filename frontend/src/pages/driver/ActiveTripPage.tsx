@@ -3,8 +3,9 @@ import { driverPortalApi, tripsApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { MapPin, Navigation, Map, Package, Box, Zap, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useToast } from '@/components/ui/toaster';
+import SignatureCanvas from 'react-signature-canvas';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,8 @@ export function ActiveTripPage() {
   const [isCompleteOpen, setIsCompleteOpen] = useState(false);
   const [odometer, setOdometer] = useState('');
   const [fuel, setFuel] = useState('');
+  const [photo, setPhoto] = useState<string | null>(null);
+  const sigCanvas = useRef<SignatureCanvas>(null);
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -61,11 +64,18 @@ export function ActiveTripPage() {
     
     const distance = odo - trip.vehicle.odometer;
     
+    let signatureStr = '';
+    if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
+      signatureStr = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
+    }
+    
     const payload = {
       id: trip.id,
       finalOdometer: odo,
       actualDistance: distance,
       fuelConsumed: fuelVal,
+      podPhotoBase64: photo || undefined,
+      podSignatureBase64: signatureStr || undefined,
     };
 
     if (!navigator.onLine) {
@@ -81,6 +91,17 @@ export function ActiveTripPage() {
     }
     
     completeMutation.mutate(payload);
+  };
+
+  const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   if (isLoading) {
@@ -198,6 +219,48 @@ export function ActiveTripPage() {
                 value={fuel} 
                 onChange={e => setFuel(e.target.value)} 
               />
+            </div>
+            
+            <div className="pt-4 border-t border-border">
+              <h3 className="text-sm font-semibold mb-3">Proof of Delivery (Optional)</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Cargo Photo</Label>
+                  {photo ? (
+                    <div className="relative rounded-lg overflow-hidden border border-border">
+                      <img src={photo} alt="Cargo" className="w-full h-32 object-cover" />
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        className="absolute top-2 right-2 h-7 px-2"
+                        onClick={() => setPhoto(null)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Input type="file" accept="image/*" capture="environment" className="flex-1" onChange={handlePhotoCapture} />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Receiver Signature</Label>
+                  <div className="border border-border rounded-lg bg-white overflow-hidden">
+                    <SignatureCanvas 
+                      ref={sigCanvas} 
+                      penColor="black" 
+                      canvasProps={{ className: "w-full h-32", style: { width: '100%', height: '128px' } }} 
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button variant="ghost" size="sm" onClick={() => sigCanvas.current?.clear()} className="h-7 text-xs">
+                      Clear Signature
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           

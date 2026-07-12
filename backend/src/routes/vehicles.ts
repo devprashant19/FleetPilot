@@ -11,6 +11,19 @@ const prisma = new PrismaClient();
 // All vehicle routes require auth
 router.use(requireAuth);
 
+// GET /api/vehicles/metadata
+router.get('/metadata', async (req, res) => {
+  const [types, regions] = await Promise.all([
+    prisma.vehicle.groupBy({ by: ['type'] }),
+    prisma.vehicle.groupBy({ by: ['region'], where: { region: { not: null } } }),
+  ]);
+  
+  res.json({
+    types: types.map(t => t.type),
+    regions: regions.map(r => r.region).filter(Boolean),
+  });
+});
+
 // GET /api/vehicles
 router.get('/', async (req, res) => {
   const page = parseInt(req.query.page as string) || 1;
@@ -61,6 +74,10 @@ router.get('/:id', async (req, res) => {
       maintenanceLogs: { orderBy: { createdAt: 'desc' } },
       fuelLogs: { orderBy: { date: 'desc' }, take: 10 },
       expenses: { orderBy: { date: 'desc' }, take: 10 },
+      documents: {
+        select: { id: true, title: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+      },
     },
   });
 
@@ -69,6 +86,42 @@ router.get('/:id', async (req, res) => {
     return;
   }
   res.json(vehicle);
+});
+
+// GET /api/vehicles/:id/documents/:docId
+router.get('/:id/documents/:docId', async (req, res) => {
+  const document = await prisma.vehicleDocument.findUnique({
+    where: { id: req.params.docId, vehicleId: req.params.id },
+  });
+
+  if (!document) {
+    res.status(404).json({ error: 'Document not found' });
+    return;
+  }
+  res.json(document);
+});
+
+// POST /api/vehicles/:id/documents
+router.post('/:id/documents', async (req, res) => {
+  const { title, documentData } = req.body;
+  if (!title || !documentData) {
+    res.status(400).json({ error: 'Title and documentData are required' });
+    return;
+  }
+
+  const document = await prisma.vehicleDocument.create({
+    data: {
+      vehicleId: req.params.id,
+      title,
+      documentData,
+    },
+  });
+
+  res.status(201).json({
+    id: document.id,
+    title: document.title,
+    createdAt: document.createdAt,
+  });
 });
 
 // POST /api/vehicles

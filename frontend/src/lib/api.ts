@@ -40,11 +40,14 @@ export const authApi = {
 
 // ─── Vehicles ─────────────────────────────────────────────────
 export const vehiclesApi = {
+  metadata: () => api.get('/vehicles/metadata').then((r) => r.data),
   list: (params?: any) => api.get('/vehicles', { params }).then((r) => r.data),
   get: (id: string) => api.get(`/vehicles/${id}`).then((r) => r.data),
   create: (data: unknown) => api.post('/vehicles', data).then((r) => r.data),
   update: (id: string, data: unknown) => api.put(`/vehicles/${id}`, data).then((r) => r.data),
   delete: (id: string) => api.delete(`/vehicles/${id}`).then((r) => r.data),
+  uploadDocument: (id: string, data: { title: string; documentData: string }) => api.post(`/vehicles/${id}/documents`, data).then((r) => r.data),
+  getDocument: (id: string, docId: string) => api.get(`/vehicles/${id}/documents/${docId}`).then((r) => r.data),
 };
 
 // ─── Drivers ──────────────────────────────────────────────────
@@ -92,7 +95,7 @@ export const expensesApi = {
 
 // ─── Dashboard ────────────────────────────────────────────────
 export const dashboardApi = {
-  get: () => api.get('/dashboard').then((r) => r.data),
+  get: (params?: any) => api.get('/dashboard', { params }).then((r) => r.data),
 };
 
 // ─── Reports ──────────────────────────────────────────────────
