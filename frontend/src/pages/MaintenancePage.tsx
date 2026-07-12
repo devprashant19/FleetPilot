@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { maintenanceApi, vehiclesApi } from '@/lib/api';
 import { Plus, Loader2, AlertCircle, Wrench, CheckCircle2, Clock, Download, FileText } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
 import { exportCSV, exportPDF } from '@/lib/exportUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -169,9 +170,12 @@ export function MaintenancePage() {
           {isLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center py-16 text-muted-foreground gap-2">
-              <Wrench className="h-10 w-10 opacity-30" />
-              <p>No maintenance logs found</p>
+            <div className="py-12">
+              <EmptyState 
+                icon={Wrench} 
+                title="No maintenance logs" 
+                description="Your vehicles are in perfect condition!" 
+              />
             </div>
           ) : (
             <Table>

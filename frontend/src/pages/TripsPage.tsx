@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { tripsApi, vehiclesApi, driversApi } from '@/lib/api';
-import { Plus, Search, Eye, Loader2, AlertCircle, Route, X, Download, FileText } from 'lucide-react';
+import { Plus, Search, Loader2, AlertCircle, MapPin, Navigation, SendHorizonal, Eye, Route, X, Download, FileText } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
 import { exportCSV, exportPDF } from '@/lib/exportUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -209,9 +210,12 @@ export function TripsPage() {
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : trips.length === 0 ? (
-            <div className="flex flex-col items-center py-16 text-muted-foreground gap-2">
-              <Route className="h-10 w-10 opacity-30" />
-              <p>No trips found</p>
+            <div className="py-12">
+              <EmptyState 
+                icon={Route} 
+                title="No trips found" 
+                description="Adjust your filters or create a new trip to get started." 
+              />
             </div>
           ) : (
             <Table>

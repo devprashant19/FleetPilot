@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { expensesApi, vehiclesApi } from '@/lib/api';
 import { Plus, Trash2, Loader2, AlertCircle, Receipt, Download, FileText } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
 import { exportCSV, exportPDF } from '@/lib/exportUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -132,9 +133,12 @@ export function ExpensesPage() {
           {isLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center py-16 text-muted-foreground gap-2">
-              <Receipt className="h-10 w-10 opacity-30" />
-              <p>No expenses found</p>
+            <div className="py-12">
+              <EmptyState 
+                icon={Receipt} 
+                title="No expenses logged" 
+                description="No miscellaneous expenses have been recorded." 
+              />
             </div>
           ) : (
             <Table>
