@@ -103,8 +103,16 @@ router.delete('/:id', async (req, res) => {
     return;
   }
 
-  await prisma.driver.delete({ where: { id: req.params.id } });
-  res.json({ message: 'Driver deleted successfully' });
+  try {
+    await prisma.driver.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Driver deleted successfully' });
+  } catch (error: any) {
+    if (error.code === 'P2003') {
+      res.status(400).json({ error: 'Cannot delete driver because they have historical records (trips). Please set status to SUSPENDED instead.' });
+    } else {
+      res.status(500).json({ error: 'Failed to delete driver' });
+    }
+  }
 });
 
 export default router;

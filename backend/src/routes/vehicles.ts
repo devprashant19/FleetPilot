@@ -108,8 +108,16 @@ router.delete('/:id', async (req, res) => {
     return;
   }
 
-  await prisma.vehicle.delete({ where: { id: req.params.id } });
-  res.json({ message: 'Vehicle deleted successfully' });
+  try {
+    await prisma.vehicle.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Vehicle deleted successfully' });
+  } catch (error: any) {
+    if (error.code === 'P2003') {
+      res.status(400).json({ error: 'Cannot delete vehicle because it has historical records (trips, maintenance, or fuel logs). Please set status to RETIRED instead.' });
+    } else {
+      res.status(500).json({ error: 'Failed to delete vehicle' });
+    }
+  }
 });
 
 export default router;
