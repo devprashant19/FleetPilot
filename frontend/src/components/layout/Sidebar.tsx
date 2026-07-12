@@ -10,6 +10,7 @@ import {
   BarChart3,
   LogOut,
   ChevronRight,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -46,7 +47,7 @@ const ROLE_COLORS: Record<string, string> = {
   FINANCIAL_ANALYST: 'text-purple-400',
 };
 
-export function Sidebar() {
+export function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean; setIsOpen?: (v: boolean) => void }) {
   const { user, logout, hasRole } = useAuth();
 
   const visibleItems = navItems.filter(
@@ -54,20 +55,39 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-card border-r border-border">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-6 border-b border-border">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <Truck className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <div>
-          <span className="text-base font-bold tracking-tight">FleetPilot</span>
-          <p className="text-[10px] text-muted-foreground leading-none">Fleet Management</p>
-        </div>
-      </div>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsOpen?.(false)}
+        />
+      )}
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
+      <aside 
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-card border-r border-border transition-transform duration-300 md:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Logo */}
+        <div className="flex h-16 items-center justify-between px-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Truck className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <div>
+              <span className="text-base font-bold tracking-tight">FleetPilot</span>
+              <p className="text-[10px] text-muted-foreground leading-none">Fleet Management</p>
+            </div>
+          </div>
+          <button className="md:hidden" onClick={() => setIsOpen?.(false)}>
+            <X className="h-5 w-5 text-muted-foreground" />
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3">
         <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Navigation
         </p>
@@ -76,6 +96,7 @@ export function Sidebar() {
             <li key={item.to}>
               <NavLink
                 to={item.to}
+                onClick={() => setIsOpen?.(false)}
                 className={({ isActive }) =>
                   cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
@@ -120,5 +141,6 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

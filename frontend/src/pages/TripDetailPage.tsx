@@ -146,9 +146,6 @@ export function TripDetailPage() {
             <h1 className="text-2xl font-bold">
               {trip.source} → {trip.destination}
             </h1>
-            <Badge variant={STATUS_VARIANT[trip.status as TripStatus]} className="text-sm px-3 py-1">
-              {trip.status}
-            </Badge>
           </div>
           <p className="text-muted-foreground text-sm mt-0.5">Trip ID: {trip.id}</p>
         </div>
@@ -190,6 +187,38 @@ export function TripDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Trip Timeline Stepper */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between relative">
+            <div className="absolute left-0 top-1/2 w-full h-1 bg-border -translate-y-1/2 z-0"></div>
+            
+            <div className="relative z-10 flex flex-col items-center gap-2 bg-card px-2">
+              <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 ${trip.status === 'CANCELLED' ? 'border-red-500 bg-red-500/20 text-red-500' : 'border-primary bg-primary text-primary-foreground'}`}>
+                1
+              </div>
+              <span className="text-sm font-medium">Drafted</span>
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center gap-2 bg-card px-2">
+              <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 ${trip.status === 'CANCELLED' ? 'border-border bg-background text-muted-foreground' : (trip.status === 'DISPATCHED' || trip.status === 'COMPLETED') ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-muted-foreground'}`}>
+                2
+              </div>
+              <span className="text-sm font-medium">Dispatched</span>
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center gap-2 bg-card px-2">
+              <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 ${trip.status === 'CANCELLED' ? 'border-red-500 bg-red-500/20 text-red-500' : trip.status === 'COMPLETED' ? 'border-green-500 bg-green-500 text-white' : 'border-border bg-background text-muted-foreground'}`}>
+                {trip.status === 'CANCELLED' ? 'X' : '3'}
+              </div>
+              <span className={`text-sm font-medium ${trip.status === 'CANCELLED' ? 'text-red-500' : ''}`}>
+                {trip.status === 'CANCELLED' ? 'Cancelled' : 'Completed'}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Trip Details */}
